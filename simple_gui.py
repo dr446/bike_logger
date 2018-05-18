@@ -2,7 +2,7 @@
 #input from SD card is an array with time, speed, other values on there
 
 
-from Tkinter import *
+from tkinter import *
 
 #create the window
 
