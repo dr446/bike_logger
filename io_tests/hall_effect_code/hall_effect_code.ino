@@ -2,6 +2,8 @@
 #include <Time.h>
 #include <SPI.h>
 #include <SD.h>
+#include "SevSeg.h"
+SevSeg sevseg;
 
 //Photoresistor Pin
 int analogPin = 0;
@@ -11,7 +13,7 @@ int flipcount = 0;
 float start_time = 0.00;
 float overall_time;
 float currentspeed = 0.00;
-const int chipSelect = 4;
+const int chipSelect = 6;
 float newtime;
 
 void setup() {
@@ -98,7 +100,7 @@ void loop() {
 //MOSI - pin 11
 //MISO - pin 12
 //CLK - pin 13
-//CS - pin 4
+//CS - pin 6
 
 String time_and_speed = "";
 overall_time=now();
@@ -110,7 +112,11 @@ time_and_speed += String(currentspeed);
 
 // open the file. note that only one file can be open at a time,
 // so you have to close this one before opening another.
-File dataFile = SD.open("speed1.txt", FILE_WRITE);
+File dataFile;
+
+dataFile = SD.open("speed1.txt", FILE_WRITE);
+
+Serial.println(dataFile);
 
 // if the file is available, write to it:
 if (dataFile) {
@@ -121,9 +127,9 @@ if (dataFile) {
  }
  // if the file isn't open, pop up an error:
  else {
-   Serial.println("error opening datalog.txt");
+   Serial.println("error opening speed1.txt");
  }
 
   voltage_past = voltage;
-  
+  sevseg.setNumber(currentspeed, 2);
 }
