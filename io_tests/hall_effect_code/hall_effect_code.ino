@@ -15,12 +15,13 @@ float overall_time;
 float currentspeed = 0.00;
 const int chipSelect = 6;
 float newtime;
-
+File dataFile;
+  
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  start_time = now();
-  overall_time = now();
+  start_time = float(now());
+  overall_time = float(now());
   Serial.print("Initializing SD card...");
 
   // see if the card is present and can be initialized:
@@ -32,6 +33,20 @@ void setup() {
   Serial.println("card initialized.");
   overall_time = 0.00;
 
+
+  //seven seg stuff
+   byte numDigits = 4;
+  byte digitPins[] = {2, 3, 4, 5};
+  byte segmentPins[] = {0, 1, 2, 3, 4, 5, 6, 7};
+  bool resistorsOnSegments = false; // 'false' means resistors are on digit pins
+  byte hardwareConfig = COMMON_ANODE; // See README.md for options
+  bool updateWithDelays = false; // Default. Recommended
+  bool leadingZeros = false; // Use 'true' if you'd like to keep the leading zeros
+  
+  sevseg.begin(hardwareConfig, numDigits, digitPins, segmentPins, resistorsOnSegments, updateWithDelays, leadingZeros);
+  sevseg.setBrightness(100);
+
+  dataFile = SD.open("speed1.txt", FILE_WRITE);
   
 }
 
@@ -52,7 +67,7 @@ void loop() {
 
   
  
-  //Serial.println(voltage);
+  Serial.println(voltage);
   if(voltage <= 0.08) {
     if(voltage_past >= 0.08){
       flip == true;
@@ -79,14 +94,15 @@ void loop() {
 
   if (flipcount == 4) {
     flipcount = 0;
-    newtime = now();
+    newtime = float(now());
     currentspeed = 0.1*3.14159/(newtime-start_time);
+    
     Serial.println(currentspeed); 
     Serial.print("newtime = ");
     Serial.println(newtime);
     Serial.print("Start time = ");
     Serial.println(start_time);
-    start_time = now();
+    start_time = float(now());
   }
 
   if (now()-start_time >= 10) {
@@ -112,11 +128,9 @@ time_and_speed += String(currentspeed);
 
 // open the file. note that only one file can be open at a time,
 // so you have to close this one before opening another.
-File dataFile;
 
-dataFile = SD.open("speed1.txt", FILE_WRITE);
 
-Serial.println(dataFile);
+//Serial.println(dataFile);
 
 // if the file is available, write to it:
 if (dataFile) {
@@ -127,9 +141,10 @@ if (dataFile) {
  }
  // if the file isn't open, pop up an error:
  else {
-   Serial.println("error opening speed1.txt");
+   //Serial.println("error opening speed1.txt");
  }
 
   voltage_past = voltage;
   sevseg.setNumber(currentspeed, 2);
+  sevseg.refreshDisplay();
 }
