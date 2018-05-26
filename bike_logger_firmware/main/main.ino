@@ -27,8 +27,7 @@ Serial.print(current_time);
 void loop() {
   
   current_speed = calculate_speed();
-  Serial.println(current_speed);
-  //sd_log_data(current_time, current_speed);
+  sd_log_data(current_time, current_speed);
 
   sev_seg_set(current_speed);
   

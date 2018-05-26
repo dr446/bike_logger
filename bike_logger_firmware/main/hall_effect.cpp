@@ -5,7 +5,6 @@ float currentspeed;
 
 //ISR
 void update_current_time(){
-  Serial.println("ISR entered");
   prev_time = current_time;
   current_time = float(millis())/1000;
 }
