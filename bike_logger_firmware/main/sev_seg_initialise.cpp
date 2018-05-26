@@ -5,7 +5,7 @@ SevSeg sevenseg; //Instantiate a seven segment controller object
 void sev_seg_initialise(){
 
   byte numDigits = 4;
-  byte digitPins[] = {2, 3, 4, 5};
+  byte digitPins[] = {3, 4, 5, 6};
   byte segmentPins[] = {0, 1, 2, 3, 4, 5, 6, 7};
   bool resistorsOnSegments = false;
   byte hardwareConfig = COMMON_ANODE;
