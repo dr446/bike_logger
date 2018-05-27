@@ -6,12 +6,19 @@
 #include "sev_seg_initialise.h"
 #include "hall_effect.h"
 #include "sd_control.h"
+#include "gyroscope.h"
 
 float current_speed;
 float current_time;
+float incline;
+float calorie_estimate; //kcal (standard food calorie unit)
+float pi = 3.14159;
+float g = 9.81;
+float user_mass = 70; //in kg
+
 
 void setup() {
-Serial.print(current_time);
+  
   Serial.begin(9600);
   
   sev_seg_initialise();
@@ -27,8 +34,13 @@ Serial.print(current_time);
 void loop() {
   
   current_speed = calculate_speed();
-  sd_log_data(current_time, current_speed);
 
   sev_seg_set(current_speed);
+
+  incline = getincline();
+
+  calorie_estimate = estimate_calories(incline, current_speed);
+
+  //sd_log_data(current_time, current_speed, incline, calorie_estimate);
   
 }

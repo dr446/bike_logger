@@ -52,7 +52,7 @@ public:
   SevSeg();
 
   void refreshDisplay();
-  void begin(byte hardwareConfig, byte numDigitsIn, byte digitPinsIn[],
+  void begin(bool i2c_state, byte hardwareConfig, byte numDigitsIn, byte digitPinsIn[],
           byte segmentPinsIn[], bool resOnSegmentsIn=0, 
           bool updateWithDelaysIn=0, bool leadingZerosIn=0);
   void setBrightness(int brightnessIn); // A number from 0..100

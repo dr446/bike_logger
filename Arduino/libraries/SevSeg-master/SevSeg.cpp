@@ -59,7 +59,7 @@
 #define DASH_IDX 37
 #define PERIOD_IDX 38
 
-bool i2c = true;
+bool i2c;
 Adafruit_MCP23008 mcp1;
 //Adafruit_MCP23008 mcp2;
 
@@ -157,10 +157,11 @@ SevSeg::SevSeg()
 // digit pins, then set resOnSegments as true.
 // Set updateWithDelays to true if you want to use the 'pre-2017' update method
 // That method occupies the processor with delay functions.
-void SevSeg::begin(byte hardwareConfig, byte numDigitsIn, byte digitPinsIn[],
+void SevSeg::begin(bool i2c_state, byte hardwareConfig, byte numDigitsIn, byte digitPinsIn[],
                    byte segmentPinsIn[], bool resOnSegmentsIn,
                    bool updateWithDelaysIn, bool leadingZerosIn) {
 
+  i2c = i2c_state;
   resOnSegments = resOnSegmentsIn;
   updateWithDelays = updateWithDelaysIn;
   leadingZeros = leadingZerosIn;

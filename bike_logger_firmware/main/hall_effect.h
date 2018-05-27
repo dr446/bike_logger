@@ -8,6 +8,7 @@
 #define HALL_EFFECT_PIN   2
 
 extern float current_time;
+extern float pi;
 
 float calculate_speed();
 

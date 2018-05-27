@@ -11,8 +11,10 @@ void sev_seg_initialise(){
   byte hardwareConfig = COMMON_ANODE;
   bool updateWithDelays = false;
   bool leadingZeros = false;
+  bool i2c = true;
   
-  sevenseg.begin(hardwareConfig, numDigits, digitPins, segmentPins, resistorsOnSegments, updateWithDelays, leadingZeros);
+  
+  sevenseg.begin(i2c, hardwareConfig, numDigits, digitPins, segmentPins, resistorsOnSegments, updateWithDelays, leadingZeros);
   sevenseg.setBrightness(100);
   
 }

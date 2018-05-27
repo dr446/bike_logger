@@ -13,7 +13,7 @@ float calculate_speed(){
  
 
   if (current_time != prev_time){
-    currentspeed = 0.1*3.14159/(current_time-prev_time); 
+    currentspeed = 0.1*pi/(current_time-prev_time); 
   } else {
     currentspeed =0; 
   }
