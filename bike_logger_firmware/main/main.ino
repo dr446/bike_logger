@@ -25,6 +25,8 @@ void setup() {
 
   sd_initialise();
 
+  gyroscope_initialise();
+
   //set up interrupt service routine that is triggered by the hall effect sensor input falling edge
   pinMode(HALL_EFFECT_PIN, INPUT);
   attachInterrupt(digitalPinToInterrupt(HALL_EFFECT_PIN), update_current_time, FALLING);
@@ -38,9 +40,9 @@ void loop() {
   sev_seg_set(current_speed);
 
   incline = getincline();
-
+  
   calorie_estimate = estimate_calories(incline, current_speed);
-
+  
   //sd_log_data(current_time, current_speed, incline, calorie_estimate);
   
 }

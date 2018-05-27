@@ -26,16 +26,19 @@ void sd_initialise(){
 	
 }
 
-void sd_log_data(int time, float speed) {
+void sd_log_data(int time_in, float speed_in, float incline, float calories) {
 	
   File dataFile = SD.open("datalog.csv", FILE_WRITE);
 
   
 	String time_and_speed = "";
-	time_and_speed = String(time);
+	time_and_speed = String(time_in);
 	time_and_speed += ",";
-	time_and_speed += String(speed);
-
+	time_and_speed += String(speed_in);
+  time_and_speed += ",";
+  time_and_speed += String(incline);
+  time_and_speed += ",";
+  time_and_speed += String(calories);
   
   // if the file is available, write to it:
   if (dataFile) {

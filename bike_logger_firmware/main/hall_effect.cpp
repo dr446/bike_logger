@@ -22,6 +22,9 @@ float calculate_speed(){
     currentspeed = 0.00;
   }
 
+  //convert from ms^-1 to kmh^-1
+  currentspeed = currentspeed*3.6;
+  
   return(currentspeed);
   
 }

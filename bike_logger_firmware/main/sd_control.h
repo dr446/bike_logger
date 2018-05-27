@@ -10,6 +10,6 @@ const int chipSelect = 6;
 
 void sd_initialise();
 
-void sd_log_data(int time, float speed);
+void sd_log_data(int time_in, float speed_in, float incline, float calories);
 
 #endif

@@ -63,21 +63,22 @@ float estimate_calories(float incline, float speed_in){
 
   //estimating the MET for flat ground.
 
-    if(speed_in == 0) MET_flat = 0;
-    else if (speed_in <= 5.5) MET_flat = 3.5;
-    else if (5.5 < speed_in <= 9.4) MET_flat = 5.8;
-    else if (9.4 < speed_in <= 12) MET_flat = 6.8;
-    else if (12 < speed_in <= 14) MET_flat = 8;
-    else if (14 < speed_in <= 16) MET_flat = 10;
-    else if (16 < speed_in <= 20) MET_flat = 12;
-    else if (speed_in >20) MET_flat = 15.8;
+    if(speed_in < 1) MET_flat = 0;
+    else if (speed_in <= 8.85) MET_flat = 3.5;
+    else if (8.85 < speed_in <= 15.12) MET_flat = 5.8;
+    else if (15.12 < speed_in <= 19.30) MET_flat = 6.8;
+    else if (19.30 < speed_in <= 22.53) MET_flat = 8;
+    else if (14 < speed_in <= 25.74) MET_flat = 10;
+    else if (16 < speed_in <= 32.18) MET_flat = 12;
+    else if (speed_in >32.18) MET_flat = 15.8;
 
   //estimating the MET solely for the incline (vertical MET)
 
-  MET_vert = g*speed_in*sin(incline*pi/180);
+  MET_vert = g*speed_in*sin(incline);
 
   MET_total = MET_vert + MET_flat;
-
+  
+  //per second. This is the rate of calories burned.
   return(user_mass*MET_total);
 
 }
