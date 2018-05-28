@@ -6,10 +6,10 @@
 #include "Arduino.h"
 
 
-const int chipSelect = 6;
+const int chipSelect = 7;
 
 void sd_initialise();
 
-void sd_log_data(int time_in, float speed_in, float incline, float calories);
+void sd_log_data(int time_in, float speed_in, float incline, float calories, float light);
 
 #endif

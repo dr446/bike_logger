@@ -19,10 +19,10 @@ void sev_seg_initialise(){
   
 }
 
-void sev_seg_set(float speed){
-
-  sevenseg.setNumber(speed, 2);
+void sev_seg_set(float speed, int digits){
   sevenseg.refreshDisplay();
+  sevenseg.setNumber(speed, digits);
+  
   
 }
 

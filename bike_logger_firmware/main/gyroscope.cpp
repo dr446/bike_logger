@@ -59,7 +59,8 @@ float getincline(){
     return 0;
   }
 
- // Serial.println(y);
+ //Serial.println("y is ");
+ //Serial.print(y);
   
   if (y>0){
     //Serial.print("yang2");

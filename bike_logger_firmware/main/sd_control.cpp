@@ -22,14 +22,13 @@ void sd_initialise(){
   }
   Serial.println("card initialized.");
   
-  Serial.end();
+  //Serial.end();
 	
 }
 
-void sd_log_data(int time_in, float speed_in, float incline, float calories) {
-	
-  File dataFile = SD.open("datalog.csv", FILE_WRITE);
-
+void sd_log_data(int time_in, float speed_in, float incline, float calories, float light) {
+  
+  File dataFile = SD.open("datalog2.csv", FILE_WRITE);
   
 	String time_and_speed = "";
 	time_and_speed = String(time_in);
@@ -39,13 +38,15 @@ void sd_log_data(int time_in, float speed_in, float incline, float calories) {
   time_and_speed += String(incline);
   time_and_speed += ",";
   time_and_speed += String(calories);
+  time_and_speed += ",";
+  time_and_speed += String(light);
   
   // if the file is available, write to it:
   if (dataFile) {
     dataFile.println(time_and_speed);
     dataFile.close();
     // print to the serial port too:
-    Serial.println(time_and_speed);
+    //Serial.println(time_and_speed);
   }
   // if the file isn't open, pop up an error:
   else {

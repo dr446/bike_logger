@@ -59,8 +59,8 @@ float estimate_calories(float incline, float speed_in){
   //MET_vert = g*speed_in*sin(incline*(pi/180));
 
   MET_total = MET_vert + MET_flat;
-  Serial.println("vertical cals");
-  Serial.println(MET_vert);
+  //Serial.println("vertical cals");
+  //Serial.println(MET_vert);
 
   //Serial.println(calorie_norm);
   

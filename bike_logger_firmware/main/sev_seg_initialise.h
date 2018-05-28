@@ -7,6 +7,6 @@
 
 void sev_seg_initialise();
 
-void sev_seg_set(float speed);
+void sev_seg_set(float speed, int digits);
 
 #endif
