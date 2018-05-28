@@ -15,7 +15,7 @@ float calorie_estimate; //kcal (standard food calorie unit)
 float pi = 3.14159;
 float g = 9.81;
 float user_mass = 70; //in kg
-
+bool calorie_updated;
 
 void setup() {
   
@@ -34,15 +34,26 @@ void setup() {
 }
 
 void loop() {
+
   
   current_speed = calculate_speed();
 
-  sev_seg_set(current_speed);
+  //sev_seg_set(current_speed);
 
   incline = getincline();
+  //Serial.println(incline);
+
+  if(calorie_updated == false) {
+    calorie_estimate += estimate_calories(incline, current_speed);
+    calorie_updated = true;
+    Serial.println(calorie_estimate);
+  }
   
-  calorie_estimate = estimate_calories(incline, current_speed);
+ 
+  
+  sev_seg_set(calorie_estimate);
   
   //sd_log_data(current_time, current_speed, incline, calorie_estimate);
-  
+
+ 
 }

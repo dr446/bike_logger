@@ -9,6 +9,9 @@
 
 extern float current_time;
 extern float pi;
+extern bool calorie_updated;
+extern float user_mass;
+extern float g;
 
 float calculate_speed();
 

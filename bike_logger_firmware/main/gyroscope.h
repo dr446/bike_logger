@@ -5,9 +5,6 @@
 #include "hall_effect.h"
 #include<Wire.h>
 
-extern float user_mass;
-extern float g;
-
 void gyroscope_initialise();
 
 //returns incline in degrees.
