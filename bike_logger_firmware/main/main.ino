@@ -39,7 +39,7 @@ void setup() {
   lights_initialise();
 
   //set up interrupt service routine that is triggered by the hall effect sensor input falling edge
-  pinMode(HALL_EFFECT_PIN, INPUT);
+  pinMode(HALL_EFFECT_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(HALL_EFFECT_PIN), update_current_time, FALLING);
   
 }
@@ -48,29 +48,30 @@ void loop() {
 
   
   current_speed = calculate_speed();
+  Serial.println(current_speed);
   
-  sev_seg_set(calorie_estimate,1);
+  //sev_seg_set(calorie_estimate,1);
   
   //sev_seg_set(current_speed,2);
 
-  incline = getincline();           //delay  in 7 seg from calling this function
-  //Serial.println(incline);
+  //incline = getincline();           //delay  in 7 seg from calling this function
+  //Serial.println(incline);        TEST TO SEE IF CALCULATING INCLINE LESS FIXES PROBLEM
 
-  sev_seg_set(calorie_estimate,1);
+  //sev_seg_set(calorie_estimate,1);
 
   if(calorie_updated == false) {
     calorie_estimate += estimate_calories(incline, current_speed);
     calorie_updated = true;
     Serial.println(calorie_estimate);
   }
-  sev_seg_set(calorie_estimate,1);
-  current_light = light_sense_and_check();
+  //sev_seg_set(calorie_estimate,1);
+  //current_light = light_sense_and_check();
   
-  sev_seg_set(calorie_estimate,1);
+  //sev_seg_set(calorie_estimate,1);
 
   
-  sd_log_data(millis()/1000, current_speed, incline, calorie_estimate, current_light);    //also delay in 7 seg from calling this function
+  //sd_log_data(millis()/1000, current_speed, incline, calorie_estimate, current_light);    //also delay in 7 seg from calling this function
 
-  sev_seg_set(calorie_estimate,1);
+  //sev_seg_set(calorie_estimate,1);
  
 }

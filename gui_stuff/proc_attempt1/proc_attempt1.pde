@@ -3,8 +3,11 @@ import grafica.*;
 String[] lines;
 int index=0;
 String[] list;
-float x;
-float y;
+float time;
+float speed;
+float incline;
+float calories;
+float light;
 
 ControlP5 cp5;
 DropdownList d1;
@@ -15,7 +18,7 @@ void setup() {
   background(215,215,255);
   
   // load in data in from csv file
-  lines = loadStrings("mock_SD_data.csv");
+  lines = loadStrings("dataforgui.CSV");
 
   // Prepare the points for the plot
   int numberofPoints = lines.length;
@@ -29,10 +32,14 @@ void setup() {
   
   for (int i = 0; i < numberofPoints; i++) {
     list = split(lines[i], ',');
-    x=float(list[0]);
-    y=float(list[1]);
+    time = float(list[0]);
+    speed = float(list[1]);
+    incline = float(list[2]);
+    calories = float(list[3]);
+    light = float(list[4]);
+    
     ///points.add(x, y);
-    plot.addPoint(x,y);
+    plot.addPoint(time,speed);
   }
   
   //drop down list stuff
@@ -104,5 +111,5 @@ void customize(DropdownList ddl) {
 
 
 void draw() {
-  background(128);
+  //background(128);
 }
