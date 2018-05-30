@@ -51,7 +51,7 @@ class SevSeg
 public:
   SevSeg();
 
-  void refreshDisplay();
+  void refreshDisplay(int display);
   void begin(bool i2c_state, byte hardwareConfig, byte numDigitsIn, byte digitPinsIn[],
           byte segmentPinsIn[], bool resOnSegmentsIn=0, 
           bool updateWithDelaysIn=0, bool leadingZerosIn=0);
