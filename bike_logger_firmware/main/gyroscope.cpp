@@ -52,21 +52,8 @@ float getincline(){
     z = z-360.0;
   }
 
-  //don't burn calories if you're going downhill
-  if(y<0) {
-    //Serial.println("yang1");
-    //Serial.println(y);
-    return 0;
-  }
-
- //Serial.println("y is ");
- //Serial.print(y);
-  
-  if (y>0){
-    //Serial.print("yang2");
-    //Serial.println(y);
-    return y;
-  }
+ return y;
+ 
 }
 
 

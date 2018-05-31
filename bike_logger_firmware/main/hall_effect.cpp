@@ -42,6 +42,12 @@ float calculate_speed(){
 
 float estimate_calories(float incline, float speed_in){
 
+
+  //don't burn calories if you're going downhill
+  if(incline<0) {
+    incline = 0.0;
+  }
+  
   //estimating the MET for flat ground.
 
     if(speed_in < 1) MET_flat = 0;
