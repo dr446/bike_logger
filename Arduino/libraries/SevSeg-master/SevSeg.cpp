@@ -62,7 +62,6 @@
 bool i2c;
 Adafruit_MCP23008 mcp1;
 Adafruit_MCP23008 mcp2;
-Adafruit_MCP23008 mcp3;
 
 static const long powersOf10[] = {
   1, // 10^0
@@ -174,10 +173,8 @@ void SevSeg::begin(bool i2c_state, byte hardwareConfig, byte numDigitsIn, byte d
 //set up i2c connection
 	if (i2c == true){
 		
-		mcp1.begin(); //segment pins for first display
-		mcp2.begin(1); //digit pins for both displays
-		mcp3.begin(7); //segment pins for second display
-		
+		mcp1.begin(); 
+		mcp2.begin(1);
 	}
 
   switch (hardwareConfig) {
@@ -217,19 +214,9 @@ void SevSeg::begin(bool i2c_state, byte hardwareConfig, byte numDigitsIn, byte d
 
   // Set the pins as outputs, and turn them off
   for (byte digit = 0 ; digit < numDigits ; digit++) {
-    pinMode(digitPins[digit], OUTPUT);
-	
-	if (i2c ==false){
-    digitalWrite(digitPins[digit], digitOff);
-	} else {
-		mcp2.pinMode(digitPins[digit], OUTPUT);
-		mcp2.pullUp(digitPins[digit], HIGH);
-		mcp2.pinMode(digitPins[digit]+4, OUTPUT);
-		mcp2.pullUp(digitPins[digit]+4, HIGH);
-		mcp2.digitalWrite(digitPins[digit], digitOff);
-		mcp2.digitalWrite(digitPins[digit]+4, digitOff);
-		
-	}
+	mcp2.pinMode(digitPins[digit], OUTPUT);
+	mcp2.pullUp(digitPins[digit], HIGH);
+    mcp2.digitalWrite(digitPins[digit], OUTPUT);
 	
   }
 
@@ -242,9 +229,6 @@ void SevSeg::begin(bool i2c_state, byte hardwareConfig, byte numDigitsIn, byte d
 		mcp1.pinMode(segmentPins[segmentNum], OUTPUT);
 		mcp1.pullUp(segmentPins[segmentNum], HIGH);
 		mcp1.digitalWrite(segmentPins[segmentNum], segmentOff);
-		mcp3.pinMode(segmentPins[segmentNum], OUTPUT);
-		mcp3.pullUp(segmentPins[segmentNum], HIGH);
-		mcp3.digitalWrite(segmentPins[segmentNum], segmentOff);
 	}
   }
 
@@ -270,7 +254,7 @@ void SevSeg::begin(bool i2c_state, byte hardwareConfig, byte numDigitsIn, byte d
 //    on. It will move to the next digit/segment after being called again (if
 //    enough time has passed).
 
-void SevSeg::refreshDisplay(int display) {
+void SevSeg::refreshDisplay() {
 
   if (!updateWithDelays) {
 
@@ -285,20 +269,12 @@ void SevSeg::refreshDisplay(int display) {
 
       // Turn all lights off for the previous segment
       for (byte digitNum = 0 ; digitNum < numDigits ; digitNum++) {
-		if (i2c == false){  
-        digitalWrite(digitPins[digitNum], digitOff);
-		} else if (display ==1) {
-			mcp1.digitalWrite(digitPins[digitNum], digitOff);	
-		} else if (display ==3) {
-			mcp3.digitalWrite(digitPins[digitNum], digitOff);	
-		}
+        mcp2.digitalWrite(digitPins[digitNum], digitOff);
       }
       if (i2c == false){
 		digitalWrite(segmentPins[prevUpdateIdx], segmentOff);
-	  } else if (display ==1) {
+	  } else {
 		mcp1.digitalWrite(segmentPins[prevUpdateIdx], segmentOff);
-	  } else if (display ==3) {
-		mcp3.digitalWrite(segmentPins[prevUpdateIdx], segmentOff);
 	  }
 
       prevUpdateIdx++;
@@ -309,31 +285,14 @@ void SevSeg::refreshDisplay(int display) {
       // Illuminate the required digits for the new segment
       if (i2c == false){
 			digitalWrite(segmentPins[segmentNum], segmentOn);
-		  } else if (display ==1) {
+		  } else {
 			mcp1.digitalWrite(segmentPins[segmentNum], segmentOn);
-		  } else if (display ==3) {
-			mcp3.digitalWrite(segmentPins[segmentNum], segmentOn);
-		}
-      
-      if (i2c == false){
-		for (byte digitNum = 0 ; digitNum < numDigits ; digitNum++) {
-			if (digitCodes[digitNum] & (1 << segmentNum)) { // Check a single bit
-				mcp2.digitalWrite(digitPins[digitNum], digitOn);
-			} 
-		}
-	  } else if (display ==1){
-			for (byte digitNum = 0 ; digitNum < numDigits ; digitNum++) {
-				if (digitCodes[digitNum] & (1 << segmentNum)) { // Check a single bit
-				mcp2.digitalWrite(digitPins[digitNum], digitOn);
-				}
-			} 
-		} else if (display ==3){
-			for (byte digitNum = 4 ; digitNum < numDigits ; digitNum++) {
-				if (digitCodes[digitNum] & (1 << segmentNum)) { // Check a single bit
-				mcp2.digitalWrite(digitPins[digitNum], digitOn);
-				}
-			}
-		}
+		  }
+      for (byte digitNum = 0 ; digitNum < numDigits ; digitNum++) {
+        if (digitCodes[digitNum] & (1 << segmentNum)) { // Check a single bit
+          mcp2.digitalWrite(digitPins[digitNum], digitOn);
+        }
+      }
     }
     else {
       /**********************************************/
@@ -345,54 +304,33 @@ void SevSeg::refreshDisplay(int display) {
         
         if (i2c == false){
 			digitalWrite(segmentPins[segmentNum], segmentOff);
-		} else if (display ==1){
+		} else {
 			mcp1.digitalWrite(segmentPins[segmentNum], segmentOff);
-		} else if (display ==3){
-			mcp3.digitalWrite(segmentPins[segmentNum], segmentOff);
 		}
 		
       }
-      
-      if (i2c == false){
-      digitalWrite(digitPins[prevUpdateIdx], digitOff);
-	  } else if (display==1){
-		  mcp2.digitalWrite(digitPins[prevUpdateIdx], digitOff);
-	  } else if (display ==3){
-		  mcp2.digitalWrite(digitPins[prevUpdateIdx]+4, digitOff);
-		 }
-	  
-	  
+      mcp2.digitalWrite(digitPins[prevUpdateIdx], digitOff);
+
       prevUpdateIdx++;
       if (prevUpdateIdx >= numDigits) prevUpdateIdx = 0;
 
       byte digitNum = prevUpdateIdx;
 
       // Illuminate the required segments for the new digit
-      if (i2c ==false){
-		  digitalWrite(digitPins[digitNum], digitOn);
-	  } else if (display==1){
-		  mcp2.digitalWrite(digitPins[prevUpdateIdx], digitOn);
-	  } else if (display ==3){
-		  mcp2.digitalWrite(digitPins[prevUpdateIdx]+4, digitOn);
-		 }
-	 
-      
-      
-      
+      mcp2.digitalWrite(digitPins[digitNum], digitOn);
       for (byte segmentNum = 0 ; segmentNum < 8 ; segmentNum++) {
         if (digitCodes[digitNum] & (1 << segmentNum)) { // Check a single bit
           
           if (i2c == false){
 			digitalWrite(segmentPins[segmentNum], segmentOn);
-		  } else if (display ==1){
+		  } else {
 			mcp1.digitalWrite(segmentPins[segmentNum], segmentOn);
-		  } else if (display ==3){
-			mcp3.digitalWrite(segmentPins[segmentNum], segmentOn);
 		  }
+        
         }
       }
     }
-}
+  }
 
   else {
     if (!resOnSegments) {
@@ -401,22 +339,10 @@ void SevSeg::refreshDisplay(int display) {
       for (byte segmentNum = 0 ; segmentNum < 8 ; segmentNum++) {
 
         // Illuminate the required digits for this segment
-       if (i2c == false){
-			digitalWrite(segmentPins[segmentNum], segmentOn);
-		  } else if (display ==1){
-			mcp1.digitalWrite(segmentPins[segmentNum], segmentOn);
-		  } else if (display ==3){
-			mcp3.digitalWrite(segmentPins[segmentNum], segmentOn);
-		  }
+        digitalWrite(segmentPins[segmentNum], segmentOn);
         for (byte digitNum = 0 ; digitNum < numDigits ; digitNum++) {
           if (digitCodes[digitNum] & (1 << segmentNum)) { // Check a single bit
-            if (i2c ==false){
-				digitalWrite(digitPins[digitNum], digitOn);
-			} else if (display==1){
-				mcp2.digitalWrite(digitPins[prevUpdateIdx], digitOn);
-			} else if (display ==3){
-				mcp2.digitalWrite(digitPins[prevUpdateIdx]+4, digitOn);
-				}
+            mcp2.digitalWrite(digitPins[digitNum], digitOn);
           }
         }
 
@@ -425,21 +351,13 @@ void SevSeg::refreshDisplay(int display) {
 
         //Turn all lights off
         for (byte digitNum = 0 ; digitNum < numDigits ; digitNum++) {
-          if (i2c == false){
-			digitalWrite(digitPins[digitNum], digitOff);
-		  } else if (display == 1){
-			mcp2.digitalWrite(digitPins[digitNum], digitOff);
-		  }else if (display == 3){
-			mcp2.digitalWrite(digitPins[digitNum]+4, digitOff);
-		  }
+          mcp2.digitalWrite(digitPins[digitNum], digitOff);
         }
       
         if (i2c == false){
 			digitalWrite(segmentPins[segmentNum], segmentOff);
-		} else if (display ==1){
+		} else {
 			mcp1.digitalWrite(segmentPins[segmentNum], segmentOff);
-		} else if (display ==3){
-			mcp3.digitalWrite(segmentPins[segmentNum], segmentOff);
 		}
       
       }
@@ -450,15 +368,13 @@ void SevSeg::refreshDisplay(int display) {
       for (byte digitNum = 0 ; digitNum < numDigits ; digitNum++) {
 
         // Illuminate the required segments for this digit
-        digitalWrite(digitPins[digitNum], digitOn);
+        mcp2.digitalWrite(digitPins[digitNum], digitOn);
         for (byte segmentNum = 0 ; segmentNum < 8 ; segmentNum++) {
           if (digitCodes[digitNum] & (1 << segmentNum)) { // Check a single bit
              if (i2c == false){
 				digitalWrite(segmentPins[segmentNum], segmentOn);
-			 } else if (display ==1){
+			 } else {
 				mcp1.digitalWrite(segmentPins[segmentNum], segmentOn);
-			 } else if (display ==3){
-				mcp3.digitalWrite(segmentPins[segmentNum], segmentOn);
 			 }
           }
         }
@@ -470,20 +386,12 @@ void SevSeg::refreshDisplay(int display) {
         for (byte segmentNum = 0 ; segmentNum < 8 ; segmentNum++) {
 		  if (i2c == false){
 			digitalWrite(segmentPins[segmentNum], segmentOff);
-		  } else if (display==1){
+		  } else {
 			mcp1.digitalWrite(segmentPins[segmentNum], segmentOff);
-		  } else if (display ==3){
-			mcp3.digitalWrite(segmentPins[segmentNum], segmentOff);
 		  }
         
         }
-        if (i2c == false){
-        digitalWrite(digitPins[digitNum], digitOff);
-		} else if (display ==1){
-			mcp2.digitalWrite(digitPins[digitNum], digitOff);
-		} else if (display ==3){
-			mcp2.digitalWrite(digitPins[digitNum]+4, digitOff);
-		}
+        mcp2.digitalWrite(digitPins[digitNum], digitOff);
       }
     }
   }
@@ -633,8 +541,7 @@ void SevSeg::blank(void) {
   for (byte digitNum = 0 ; digitNum < numDigits ; digitNum++) {
     digitCodes[digitNum] = digitCodeMap[BLANK_IDX];
   }
-  refreshDisplay(1);
-  refreshDisplay(3);
+  refreshDisplay();
 }
 
 // findDigits

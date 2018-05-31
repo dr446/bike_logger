@@ -64,14 +64,14 @@ void loop() {
     calorie_updated = true;
     Serial.println(calorie_estimate);
   }
-  //sev_seg_set(calorie_estimate,1);
+  //sev_seg_set(3,calorie_estimate,1);
   //current_light = light_sense_and_check();
   
-  //sev_seg_set(calorie_estimate,1);
+  //sev_seg_set(3,calorie_estimate,1);
 
   
   //sd_log_data(millis()/1000, current_speed, incline, calorie_estimate, current_light);    //also delay in 7 seg from calling this function
 
-  //sev_seg_set(calorie_estimate,1);
+  sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
  
 }
