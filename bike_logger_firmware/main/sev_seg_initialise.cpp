@@ -23,22 +23,19 @@ void sev_seg_set(int speed, int calories){
   
   int num_top = speed;
   int num_bot = calories;
-  int ones = num_top % 10;
-  int tens = (num_top/10) % 10;
-  int huns = (num_top/100) % 10;
-  int thous = (num_top/1000) % 10;
   
   mcp1.writeGPIO(segment_code(10));
   mcp3.writeGPIO(segment_code(10));
   mcp2.writeGPIO(digit_code(3));
   mcp1.writeGPIO(segment_code(num_top % 10));
-  mcp3.writeGPIO(add_dp(segment_code(num_bot % 10)));
+  mcp3.writeGPIO(segment_code(num_bot % 10));
   delay(5);
   mcp1.writeGPIO(segment_code(10));
   mcp3.writeGPIO(segment_code(10));
   mcp2.writeGPIO(digit_code(2));
   mcp1.writeGPIO(add_dp(segment_code(num_top/10 % 10)));
-  mcp3.writeGPIO(segment_code((num_bot/10)%10));
+  mcp3.writeGPIO(add_dp(segment_code((num_bot/10)%10)));
+  
   delay(5);
   mcp1.writeGPIO(segment_code(10));
   mcp3.writeGPIO(segment_code(10));

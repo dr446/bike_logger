@@ -18,8 +18,13 @@ float incline;
 float calorie_estimate; //kcal (standard food calorie unit)
 float pi = 3.14159;
 float g = 9.81;
-float user_mass = 70; //in kg
 bool calorie_updated;
+
+//USER PARAMETERS
+float user_mass = 70; //in kg
+float bike_frame_incline = 50; //in degrees
+float diameter = 0.7; //in meters
+
 
 
 //light set up
@@ -45,32 +50,30 @@ void setup() {
 }
 
 void loop() {
-
+sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
   
   current_speed = calculate_speed();
-  Serial.println(current_speed);
-  
-  //sev_seg_set(calorie_estimate,1);
-  
-  //sev_seg_set(current_speed,2);
+  //Serial.println(current_speed);
 
-  //incline = getincline();           //delay  in 7 seg from calling this function
+           //delay  in 7 seg from calling this function
   //Serial.println(incline);        TEST TO SEE IF CALCULATING INCLINE LESS FIXES PROBLEM
 
-  //sev_seg_set(calorie_estimate,1);
-
+  sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
+  
   if(calorie_updated == false) {
+    incline = getincline(); 
+    sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
     calorie_estimate += estimate_calories(incline, current_speed);
+    sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
     calorie_updated = true;
-    Serial.println(calorie_estimate);
+    sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
   }
-  //sev_seg_set(3,calorie_estimate,1);
-  //current_light = light_sense_and_check();
   
-  //sev_seg_set(3,calorie_estimate,1);
+  current_light = light_sense_and_check();
 
+  sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
   
-  //sd_log_data(millis()/1000, current_speed, incline, calorie_estimate, current_light);    //also delay in 7 seg from calling this function
+  sd_log_data(millis()/1000, current_speed, incline, calorie_estimate, current_light);    //also delay in 7 seg from calling this function
 
   sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
  

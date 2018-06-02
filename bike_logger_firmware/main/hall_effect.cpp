@@ -2,7 +2,6 @@
 
 float prev_time;
 float currentspeed;
-float diameter = 0.1;
 
 //variables for calorie counting
 float MET_flat;
@@ -16,8 +15,8 @@ void update_current_time(){
   calorie_updated = false;
   prev_time = current_time;
   current_time = float(millis())/1000;
-  Serial.println("isr entered");
-  Serial.println(currentspeed);
+  //Serial.println("isr entered");
+  //Serial.println(currentspeed);
 }
 
 float calculate_speed(){

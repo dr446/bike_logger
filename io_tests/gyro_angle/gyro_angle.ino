@@ -25,9 +25,10 @@ if (z>180){
   z = z-360.0;
 }
 
+x = -x;
 //Serial.print("AngleX= "); Serial.println(x);
 
-Serial.print("AngleY= "); Serial.println(y);
+Serial.print("AngleY= "); Serial.println(x);
 
 //Serial.print("AngleZ= "); Serial.println(z); Serial.println("-----------------------------------------"); delay(400); 
 }

@@ -9,4 +9,4 @@ extern int brightness;
 void lights_initialise();
 float light_sense_and_check();
 
-#endif
+#endif.

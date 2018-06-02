@@ -5,6 +5,8 @@
 #include "hall_effect.h"
 #include<Wire.h>
 
+extern float bike_frame_incline;
+
 void gyroscope_initialise();
 
 //returns incline in degrees.

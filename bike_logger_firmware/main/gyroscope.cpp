@@ -22,6 +22,9 @@ void gyroscope_initialise(){
 }
 
 float getincline(){
+  //this function is based on code written by Ahmet Burkay Kirnik specifically for the GY-521 MPU-6050 module, obtained from instructables.com
+  //http://www.instructables.com/id/How-to-Measure-Angle-With-MPU-6050GY-521/
+  
   Wire.beginTransmission(MPU_addr); 
   Wire.write(0x3B); 
   Wire.endTransmission(false); 
@@ -52,7 +55,7 @@ float getincline(){
     z = z-360.0;
   }
 
- return y;
+ return -x-bike_frame_incline;
  
 }
 
