@@ -1,3 +1,5 @@
+import processing.serial.*;
+import signal.library.*;
 import controlP5.*;
 import grafica.*;
 String[] lines;
@@ -10,31 +12,62 @@ float speed;
 float incline;
 float calories;
 float light;
+float filteredlight;
 float elevation;
 float elevation_step = 0.0;
 
+// serial connection
+Serial myPort;
 
 ControlP5 cp5;
 DropdownList d1;
 int cnt = 0;
 
+// smoothArray is a lowpass filter. values:an array of numbers that will be modified in place, smoothing: the strength of the smoothing filter; 1=no change, larger values smoothes more
+float[] smoothArray(float[] values, float smoothing ){
+  float value = values[0]; // start with the first input
+  for (int i=1; i<values.length; i++){
+    float currentValue = values[i];
+    value = value + ( (currentValue - value) / smoothing);
+    values[i] = value;
+  }
+  return values;
+}
+
+
 void setup() {
   size(1400,800);
   background(215,215,255);
   
+  //setup serial port to arduino
+  printArray(Serial.list());
+  //myPort = new Serial(this, Serial.list()[0],  9600);
+  //myPort.write("1");
+  
   // load in data in from csv file
-  lines = loadStrings("dataforgui.CSV");
+  lines = loadStrings("perfectdata.CSV");
 
   // Prepare the points for the plot
   int numberofPoints = lines.length;
   GPointsArray points = new GPointsArray(numberofPoints);
 
   // Create a plots and set its position on the screen
-  GPlot plot = new GPlot(this,1,25);
-  GPlot plot2 = new GPlot(this,550,375);
-  GPlot plot3 = new GPlot(this,1,375);
-  GPlot plot4 = new GPlot(this,550,25);
+  GPlot plot = new GPlot(this,50,50);
+  GPlot plot2 = new GPlot(this,600,400);
+  GPlot plot3 = new GPlot(this,51,400);
+  GPlot plot4 = new GPlot(this,600,50);
+  GPlot plot5 = new GPlot(this, 970, 50);
   
+  //initialising arrays to be filled with csvread data
+  float[] light_array = new float[numberofPoints];
+  float[] light_array_filtered = new float[numberofPoints];
+  float[] elevation_array = new float[numberofPoints];
+  float[] elevation_array_filtered = new float[numberofPoints];
+  float[] speed_array = new float[numberofPoints];
+  float[] speed_array_filtered = new float[numberofPoints];
+  float[] calorie_array = new float[numberofPoints];
+  float[] calorie_array_filtered = new float[numberofPoints];
+  float[] time_array = new float[numberofPoints];
   
   for (int i = 0; i < numberofPoints; i++) {
     list = split(lines[i], ',');
@@ -53,6 +86,14 @@ void setup() {
     //update elevation
     elevation = elevation + elevation_step;
     
+    
+    //storing data
+    light_array[i] = light;
+    elevation_array[i] = elevation;
+    speed_array[i] = speed;
+    calorie_array[i] = calories;
+    time_array[i] = time;
+    
     ///points.add(x, y);
     plot.addPoint(time,speed);
     plot2.addPoint(time,calories);
@@ -62,6 +103,18 @@ void setup() {
     
     //update time_previous
     time_previous = time;
+  }
+  
+  //trying to filter the arrays of data
+  light_array_filtered = smoothArray(light_array, 20);
+  elevation_array_filtered = smoothArray(elevation_array, 30);
+  speed_array_filtered = smoothArray(speed_array,20);
+  calorie_array_filtered = smoothArray(calorie_array, 20);
+  
+  
+  //creating graph from arrays not as the points are read from the csv
+  for (int i = 0; i < numberofPoints; i++) {
+    plot5.addPoint(time_array[i],calorie_array_filtered[i]);
   }
   
   /*//drop down list stuff
@@ -75,7 +128,12 @@ void setup() {
   customize(d1); // customize the first list
   */
   
+  // TEST Filter the signal [THIS IS THE IMPORTANT LINE HERE!]
   
+  
+  
+  //testing filtering
+  //filtered_light = myFilter.filterUnitFloat( light_array );
 
   // Set the plot title and the axis labels
   plot.setTitleText("Speed");
@@ -93,6 +151,10 @@ void setup() {
   plot4.setTitleText("Elevation");
   plot4.getXAxis().setAxisLabelText("Time /s");
   plot4.getYAxis().setAxisLabelText("Elevation /km");
+  
+  plot5.setTitleText("Filter test graph");
+  plot5.getXAxis().setAxisLabelText("Time /s");
+  plot5.getYAxis().setAxisLabelText("light");
 
   
   // Draw the plot  
@@ -135,6 +197,16 @@ void setup() {
   plot4.drawGridLines(GPlot.BOTH);
   plot4.drawLines();
   plot4.endDraw();
+  
+  plot5.beginDraw();
+  plot5.drawBackground();
+  plot5.drawBox();
+  plot5.drawXAxis();
+  plot5.drawYAxis();
+  plot5.drawTitle();
+  plot5.drawGridLines(GPlot.BOTH);
+  plot5.drawLines();
+  plot5.endDraw();
 }
 
 
@@ -175,5 +247,4 @@ void customize(DropdownList ddl) {
 
 
 void draw() {
-  //background(128);
 }
