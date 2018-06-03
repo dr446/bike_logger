@@ -13,6 +13,8 @@
 //speed and calorie calculation setup
 float current_speed;
 float current_time;
+float log_time;
+float log_time_ref;
 float current_light;
 float incline;
 float calorie_estimate; //kcal (standard food calorie unit)
@@ -46,6 +48,8 @@ void setup() {
   //set up interrupt service routine that is triggered by the hall effect sensor input falling edge
   pinMode(HALL_EFFECT_PIN, INPUT_PULLUP);
   attachInterrupt(digitalPinToInterrupt(HALL_EFFECT_PIN), update_current_time, FALLING);
+
+  log_time_ref = millis();
   
 }
 
@@ -72,9 +76,13 @@ sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
   current_light = light_sense_and_check();
 
   sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
-  
-  sd_log_data(millis()/1000, current_speed, incline, calorie_estimate, current_light);    //also delay in 7 seg from calling this function
 
+  log_time = millis(); 
+  
+  if (log_time - log_time_ref>1000){
+  sd_log_data(log_time/1000, current_speed, incline, calorie_estimate, current_light);    //also delay in 7 seg from calling this function
+  log_time_ref = log_time;
+  }
   sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
  
 }

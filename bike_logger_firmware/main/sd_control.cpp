@@ -20,6 +20,7 @@ void sd_initialise(){
     // don't do anything more:
     return;
   }
+  SD.remove("datalog2.csv");
   Serial.println("card initialized.");
   
   //Serial.end();
