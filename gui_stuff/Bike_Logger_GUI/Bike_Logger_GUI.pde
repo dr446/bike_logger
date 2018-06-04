@@ -50,7 +50,7 @@ void setup() {
   cp5 = new ControlP5(this);
   
   // load in data in from csv file
-  lines = loadStrings("DATALOG2.CSV");
+  lines = loadStrings("perfectdata2.csv");
 
   // Prepare the points for the plot
   int numberofPoints = lines.length;
@@ -91,10 +91,11 @@ void setup() {
     
     
     //convert voltage to lux
-    float resistance = (light * 1000)/(5.0 - light);
-    light = 10000000*pow(resistance, -1.4);
+    light = 1000*light;
+    //float resistance = (light * 1000)/(5.0 - light);
+    //light = 10000000*pow(resistance, -1.4);
     
-    //updating elevation once per timestep 
+    //updating elevation once per timestep (as this is the highest resolution possible from our data)
     if (time != time_previous){
       time_step = time - time_previous; // this should always be 1 unless something has gone wrong in the timing
       elevation_step = speed * (1.0/3600.0)* time_step * tan(incline*(3.141/180));
@@ -112,10 +113,8 @@ void setup() {
     //update elevation
     elevation = elevation + elevation_step;
     
-    
     //update distance
     distance = distance + distance_step;
-    
     
     //storing data
     light_array[i] = light;
@@ -130,19 +129,18 @@ void setup() {
     //plot3.addPoint(time,light);
     //plot4.addPoint(time,elevation);
     
-    
     //update time_previous
     time_previous = time;
   }
   
-  //trying to filter the arrays of data
+  //low pass filter the arrays of data
   light_array_filtered = smoothArray(light_array, 20);
   elevation_array_filtered = smoothArray(elevation_array, 30);
   speed_array_filtered = smoothArray(speed_array,5);
   calorie_array_filtered = smoothArray(calorie_array, 20);
   
   
-  //Printing the distance travelled
+  //Creating Text Labels
   
   myTextlabelA = cp5.addTextlabel("label")
                   .setText("The Bike Logger: Data From Your Journey")
