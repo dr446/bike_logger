@@ -49,7 +49,7 @@ float estimate_calories(float incline, float speed_in){
   
   //estimating the MET for flat ground.
 
-    if(speed_in < 1) MET_flat = 0;
+    if(speed_in*cos(incline*(pi/180)) < 1) MET_flat = 0;
     else if (speed_in <= 8.85) MET_flat = 3.5;
     else if (8.85 < speed_in <= 15.12) MET_flat = 5.8;
     else if (15.12 < speed_in <= 19.30) MET_flat = 6.8;
@@ -61,13 +61,9 @@ float estimate_calories(float incline, float speed_in){
   //estimating the MET solely for the incline (vertical MET)
 
   MET_vert = 0.000239006*g*speed_in*sin(incline*(pi/180));
-  //MET_vert = g*speed_in*sin(incline*(pi/180));
 
   MET_total = MET_vert + MET_flat;
-  //Serial.println("vertical cals");
-  //Serial.println(MET_vert);
 
-  //Serial.println(calorie_norm);
   
   Calories = MET_total * (current_time - prev_time) * user_mass * calorie_norm;
   
