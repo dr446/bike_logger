@@ -15,13 +15,20 @@ float light;
 float filteredlight;
 float elevation;
 float elevation_step = 0.0;
+float distance;
+float distance_step = 0.0;
+float lux;
+
+float anglefix = 0.0;
 
 // serial connection
 Serial myPort;
 
 ControlP5 cp5;
-DropdownList d1;
-int cnt = 0;
+Textlabel myTextlabelA;
+Textlabel myTextlabelB;
+Textlabel myTextlabelC;
+Textlabel myTextlabelD;
 
 // smoothArray is a lowpass filter. values:an array of numbers that will be modified in place, smoothing: the strength of the smoothing filter; 1=no change, larger values smoothes more
 float[] smoothArray(float[] values, float smoothing ){
@@ -39,24 +46,22 @@ void setup() {
   size(1400,800);
   background(215,215,255);
   
-  //setup serial port to arduino
-  printArray(Serial.list());
-  //myPort = new Serial(this, Serial.list()[0],  9600);
-  //myPort.write("1");
+  //initialise cp5 object to allow text labels to be written
+  cp5 = new ControlP5(this);
   
   // load in data in from csv file
-  lines = loadStrings("perfectdata.CSV");
+  lines = loadStrings("DATALOG2.CSV");
 
   // Prepare the points for the plot
   int numberofPoints = lines.length;
   GPointsArray points = new GPointsArray(numberofPoints);
 
   // Create a plots and set its position on the screen
-  GPlot plot = new GPlot(this,50,50);
-  GPlot plot2 = new GPlot(this,600,400);
-  GPlot plot3 = new GPlot(this,51,400);
-  GPlot plot4 = new GPlot(this,600,50);
-  GPlot plot5 = new GPlot(this, 970, 50);
+  GPlot plot = new GPlot(this,50,100);
+  GPlot plot2 = new GPlot(this,600,450);
+  GPlot plot3 = new GPlot(this,51,450);
+  GPlot plot4 = new GPlot(this,600,100);
+  //GPlot plot5 = new GPlot(this, 970, 50);
   
   //initialising arrays to be filled with csvread data
   float[] light_array = new float[numberofPoints];
@@ -70,21 +75,46 @@ void setup() {
   float[] time_array = new float[numberofPoints];
   
   for (int i = 0; i < numberofPoints; i++) {
+    
     list = split(lines[i], ',');
+    
+    //DELETE THIS IF DIYA FIXES IN FIRMWARE - fixing angle issue
+   // if (i == 0){
+     // anglefix = float(list[2]);
+    //};
+    
     time = float(list[0]);
     speed = float(list[1]);
-    incline = float(list[2]);
+    incline = float(list[2]) - anglefix;
     calories = float(list[3]);
     light = float(list[4]);
+    
+    
+    //convert voltage to lux
+    float resistance = (light * 1000)/(5.0 - light);
+    light = 10000000*pow(resistance, -1.4);
     
     //updating elevation once per timestep 
     if (time != time_previous){
       time_step = time - time_previous; // this should always be 1 unless something has gone wrong in the timing
-      elevation_step = speed * (1.0/3600.0)* time_step * tan(incline);
+      elevation_step = speed * (1.0/3600.0)* time_step * tan(incline*(3.141/180));
+      elevation_step = elevation_step * 1000.0 ; // convert elevation into metres not kilometres
+
     }
+    
+     //updating distance once per timestep 
+    if (time != time_previous){
+      time_step = time - time_previous; // this should always be 1 unless something has gone wrong in the timing
+      distance_step = speed * (1.0/3600.0)* time_step;
+    }
+    
     
     //update elevation
     elevation = elevation + elevation_step;
+    
+    
+    //update distance
+    distance = distance + distance_step;
     
     
     //storing data
@@ -94,11 +124,11 @@ void setup() {
     calorie_array[i] = calories;
     time_array[i] = time;
     
-    ///points.add(x, y);
-    plot.addPoint(time,speed);
-    plot2.addPoint(time,calories);
-    plot3.addPoint(time,light);
-    plot4.addPoint(time,elevation);
+    ///unfiltered points.add(x, y) - uncomment this for unfiltered graphing;
+    //plot.addPoint(time,speed);
+    //plot2.addPoint(time,calories);
+    //plot3.addPoint(time,light);
+    //plot4.addPoint(time,elevation);
     
     
     //update time_previous
@@ -108,32 +138,45 @@ void setup() {
   //trying to filter the arrays of data
   light_array_filtered = smoothArray(light_array, 20);
   elevation_array_filtered = smoothArray(elevation_array, 30);
-  speed_array_filtered = smoothArray(speed_array,20);
+  speed_array_filtered = smoothArray(speed_array,5);
   calorie_array_filtered = smoothArray(calorie_array, 20);
   
   
-  //creating graph from arrays not as the points are read from the csv
+  //Printing the distance travelled
+  
+  myTextlabelA = cp5.addTextlabel("label")
+                  .setText("The Bike Logger: Data From Your Journey")
+                  .setPosition(100,50)
+                  .setColorValue(0)
+                  .setFont(createFont("Georgia",26));
+                  
+                  
+  
+  myTextlabelB = cp5.addTextlabel("label2")
+                    .setText("Distance travelled on journey:")
+                    .setPosition(1100,200)
+                    .setColorValue(0)
+                    .setFont(createFont("Georgia",16));
+                    
+  myTextlabelC = cp5.addTextlabel("label3")
+                    .setText(str(distance))
+                    .setPosition(1100,230)
+                    .setColorValue(0)
+                    .setFont(createFont("Georgia",16));
+                    
+  myTextlabelD = cp5.addTextlabel("label4")
+                    .setText("km")
+                    .setPosition(1200,230)
+                    .setColorValue(0)
+                    .setFont(createFont("Georgia",16));
+  
+  //plotting graphs from filtered data
   for (int i = 0; i < numberofPoints; i++) {
-    plot5.addPoint(time_array[i],calorie_array_filtered[i]);
+    plot.addPoint(time_array[i],speed_array_filtered[i]);
+    plot2.addPoint(time_array[i],calorie_array_filtered[i]);
+    plot3.addPoint(time_array[i],light_array_filtered[i]);
+    plot4.addPoint(time_array[i],elevation_array_filtered[i]);
   }
-  
-  /*//drop down list stuff
-  cp5 = new ControlP5(this);
-  
-  // create a DropdownList, 
-  d1 = cp5.addDropdownList("myList-d1")
-          .setPosition(550, 100)
-          ;
-          
-  customize(d1); // customize the first list
-  */
-  
-  // TEST Filter the signal [THIS IS THE IMPORTANT LINE HERE!]
-  
-  
-  
-  //testing filtering
-  //filtered_light = myFilter.filterUnitFloat( light_array );
 
   // Set the plot title and the axis labels
   plot.setTitleText("Speed");
@@ -144,17 +187,17 @@ void setup() {
   plot2.getXAxis().setAxisLabelText("Time /s");
   plot2.getYAxis().setAxisLabelText("Calories burnt");
   
-  plot3.setTitleText("Light");
+  plot3.setTitleText("Light Intensity");
   plot3.getXAxis().setAxisLabelText("Time /s");
-  plot3.getYAxis().setAxisLabelText("Light Voltage");
+  plot3.getYAxis().setAxisLabelText("Light /lux");
   
   plot4.setTitleText("Elevation");
   plot4.getXAxis().setAxisLabelText("Time /s");
-  plot4.getYAxis().setAxisLabelText("Elevation /km");
+  plot4.getYAxis().setAxisLabelText("Elevation /m");
   
-  plot5.setTitleText("Filter test graph");
-  plot5.getXAxis().setAxisLabelText("Time /s");
-  plot5.getYAxis().setAxisLabelText("light");
+  //plot5.setTitleText("Filter test graph");
+  //plot5.getXAxis().setAxisLabelText("Time /s");
+  //plot5.getYAxis().setAxisLabelText("light");
 
   
   // Draw the plot  
@@ -198,7 +241,7 @@ void setup() {
   plot4.drawLines();
   plot4.endDraw();
   
-  plot5.beginDraw();
+  /*plot5.beginDraw();
   plot5.drawBackground();
   plot5.drawBox();
   plot5.drawXAxis();
@@ -206,43 +249,7 @@ void setup() {
   plot5.drawTitle();
   plot5.drawGridLines(GPlot.BOTH);
   plot5.drawLines();
-  plot5.endDraw();
-}
-
-
-
-
-
-void customize(DropdownList ddl) {
-  // a convenience function to customize a DropdownList
-  ddl.setBackgroundColor(color(0));
-  ddl.setItemHeight(20);
-  ddl.setBarHeight(15);
-  ddl.getCaptionLabel().set("Select Graph To View");
-  
-  ddl.addItem("Speed Graph",0);
-  ddl.addItem("Some Other Graph",1);
-  
-  //ddl.scroll(0);
-  ddl.setColorBackground(color(200));
-  ddl.setColorActive(color(255, 128));
-}
-
- 
- void controlEvent(ControlEvent theEvent) {
-  // DropdownList is of type ControlGroup.
-  // A controlEvent will be triggered from inside the ControlGroup class.
-  // therefore you need to check the originator of the Event with
-  // if (theEvent.isGroup())
-  // to avoid an error message thrown by controlP5.
-
-  if (theEvent.isGroup()) {
-    // check if the Event was triggered from a ControlGroup
-    println("event from group : "+theEvent.getGroup().getValue()+" from "+theEvent.getGroup());
-  } 
-  else if (theEvent.isController()) {
-    println("event from controller : "+theEvent.getController().getValue()+" from "+theEvent.getController());
-  }
+  plot5.endDraw();*/
 }
 
 
