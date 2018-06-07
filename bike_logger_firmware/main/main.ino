@@ -24,7 +24,7 @@ bool calorie_updated;
 
 //USER PARAMETERS
 float user_mass = 70; //in kg
-float bike_frame_incline = 50; //in degrees
+float bike_frame_incline = 46; //in degrees
 float diameter = 0.7; //in meters
 
 
@@ -57,10 +57,6 @@ void loop() {
 sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
   
   current_speed = calculate_speed();
-  //Serial.println(current_speed);
-
-           //delay  in 7 seg from calling this function
-  //Serial.println(incline);        TEST TO SEE IF CALCULATING INCLINE LESS FIXES PROBLEM
 
   sev_seg_set(int(current_speed*10), int(calorie_estimate*10));
   

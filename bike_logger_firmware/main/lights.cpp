@@ -8,14 +8,12 @@ float light_sense_and_check() {
   // put your main code here, to run repeatedly:
   int sensorValue = analogRead(A0);
   float voltage = sensorValue * (5.0 / 1023.0);
-  //Serial.println("Voltage");
-  //Serial.println(voltage);
 
-  //setting what state llight should be in
+
+  //setting what state light should be in
   if(voltage > 1.4){
     brightness = 0;
     analogWrite(led, brightness);
-    //Serial.println(brightness);
   }
 
   if(voltage < 1.40 and voltage > 1.2){

@@ -46,8 +46,6 @@ void sd_log_data(int time_in, float speed_in, float incline, float calories, flo
   if (dataFile) {
     dataFile.println(time_and_speed);
     dataFile.close();
-    // print to the serial port too:
-    //Serial.println(time_and_speed);
   }
   // if the file isn't open, pop up an error:
   else {
