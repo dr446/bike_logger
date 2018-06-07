@@ -1,3 +1,6 @@
+//import relevant libraries
+
+//set up variables for holding data
 import processing.serial.*;
 import signal.library.*;
 import controlP5.*;
@@ -78,11 +81,6 @@ void setup() {
     
     list = split(lines[i], ',');
     
-    //DELETE THIS IF DIYA FIXES IN FIRMWARE - fixing angle issue
-   // if (i == 0){
-     // anglefix = float(list[2]);
-    //};
-    
     time = float(list[0]);
     speed = float(list[1]);
     incline = float(list[2]) - anglefix;
@@ -91,9 +89,8 @@ void setup() {
     
     
     //convert voltage to lux
-    light = 1000*light;
-    //float resistance = (light * 1000)/(5.0 - light);
-    //light = 10000000*pow(resistance, -1.4);
+    float resistance = (light * 1000)/(5.0 - light);
+    light = 10000000*pow(resistance, -1.4);
     
     //updating elevation once per timestep (as this is the highest resolution possible from our data)
     if (time != time_previous){
@@ -122,12 +119,6 @@ void setup() {
     speed_array[i] = speed;
     calorie_array[i] = calories;
     time_array[i] = time;
-    
-    ///unfiltered points.add(x, y) - uncomment this for unfiltered graphing;
-    //plot.addPoint(time,speed);
-    //plot2.addPoint(time,calories);
-    //plot3.addPoint(time,light);
-    //plot4.addPoint(time,elevation);
     
     //update time_previous
     time_previous = time;
@@ -193,11 +184,6 @@ void setup() {
   plot4.getXAxis().setAxisLabelText("Time /s");
   plot4.getYAxis().setAxisLabelText("Elevation /m");
   
-  //plot5.setTitleText("Filter test graph");
-  //plot5.getXAxis().setAxisLabelText("Time /s");
-  //plot5.getYAxis().setAxisLabelText("light");
-
-  
   // Draw the plot  
   plot.beginDraw();
   plot.drawBackground();
@@ -239,15 +225,6 @@ void setup() {
   plot4.drawLines();
   plot4.endDraw();
   
-  /*plot5.beginDraw();
-  plot5.drawBackground();
-  plot5.drawBox();
-  plot5.drawXAxis();
-  plot5.drawYAxis();
-  plot5.drawTitle();
-  plot5.drawGridLines(GPlot.BOTH);
-  plot5.drawLines();
-  plot5.endDraw();*/
 }
 
 
