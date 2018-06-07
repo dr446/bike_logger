@@ -19,7 +19,7 @@ float distance;
 float distance_step = 0.0;
 float lux;
 
-float anglefix = 0.0;
+float anglefix = -4.0;
 
 // serial connection
 Serial myPort;
@@ -43,7 +43,7 @@ float[] smoothArray(float[] values, float smoothing ){
 
 
 void setup() {
-  size(1400,800);
+  size(1370,770);
   background(215,215,255);
   
   //initialise cp5 object to allow text labels to be written
@@ -58,8 +58,8 @@ void setup() {
 
   // Create a plots and set its position on the screen
   GPlot plot = new GPlot(this,50,100);
-  GPlot plot2 = new GPlot(this,600,450);
-  GPlot plot3 = new GPlot(this,51,450);
+  GPlot plot2 = new GPlot(this,600,420);
+  GPlot plot3 = new GPlot(this,50,420);
   GPlot plot4 = new GPlot(this,600,100);
   //GPlot plot5 = new GPlot(this, 970, 50);
   
